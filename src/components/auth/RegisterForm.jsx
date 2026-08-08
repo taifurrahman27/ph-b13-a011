@@ -52,7 +52,16 @@ const RegisterForm = () => {
         try {
             const data = await registerUser(formData);
 
+            if (!data?.token || !data?.user) {
+                throw new Error(
+                    "Registration was successful, but authentication data was not received."
+                );
+            }
+
             localStorage.setItem("accessToken", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+
+            window.dispatchEvent(new Event("auth-change"));
 
             router.push("/dashboard");
         } catch (error) {

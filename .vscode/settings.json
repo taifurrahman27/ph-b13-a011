@@ -1,0 +1,5 @@
+{
+    "json.schemaDownload.enable": false,
+    "json.format.enable": true,
+    "json.validate.enable": true
+}

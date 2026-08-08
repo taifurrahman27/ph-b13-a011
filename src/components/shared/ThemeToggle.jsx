@@ -1,53 +1,58 @@
 "use client";
 
-import { Switch } from "@heroui/react";
-import { HiMoon, HiSun } from "react-icons/hi2";
-import { useState } from "react";
-
-const getInitialTheme = () => {
-    if (typeof window === "undefined") {
-        return true;
-    }
-
-    return localStorage.getItem("theme") !== "light";
-};
+import { useEffect, useState } from "react";
+import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi2";
 
 const ThemeToggle = () => {
-    const [isDark, setIsDark] = useState(getInitialTheme);
-
-    const handleThemeChange = (value) => {
-        setIsDark(value);
-
-        if (value) {
-            document.documentElement.classList.add("dark");
-            localStorage.setItem("theme", "dark");
-        } else {
-            document.documentElement.classList.remove("dark");
-            localStorage.setItem("theme", "light");
+    const [isDark, setIsDark] = useState(() => {
+        if (typeof window === "undefined") {
+            return false;
         }
+
+        const savedTheme = window.localStorage.getItem("theme");
+
+        if (savedTheme === "dark") {
+            return true;
+        }
+
+        if (savedTheme === "light") {
+            return false;
+        }
+
+        return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    });
+
+    useEffect(() => {
+        document.documentElement.classList.toggle("dark", isDark);
+    }, [isDark]);
+
+    const toggleTheme = () => {
+        const nextTheme = isDark ? "light" : "dark";
+
+        document.documentElement.classList.toggle(
+            "dark",
+            nextTheme === "dark"
+        );
+
+        localStorage.setItem("theme", nextTheme);
+        setIsDark(nextTheme === "dark");
     };
 
     return (
-        <Switch
-            isSelected={isDark}
-            onChange={handleThemeChange}
-            size="sm"
-            aria-label="Toggle theme"
+        <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={
+                isDark ? "Switch to light mode" : "Switch to dark mode"
+            }
+            className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
         >
-            <Switch.Content>
-                <Switch.Control>
-                    <Switch.Thumb>
-                        <Switch.Icon>
-                            {isDark ? (
-                                <HiMoon className="h-3 w-3" />
-                            ) : (
-                                <HiSun className="h-3 w-3" />
-                            )}
-                        </Switch.Icon>
-                    </Switch.Thumb>
-                </Switch.Control>
-            </Switch.Content>
-        </Switch>
+            {isDark ? (
+                <HiOutlineSun className="h-5 w-5" />
+            ) : (
+                <HiOutlineMoon className="h-5 w-5" />
+            )}
+        </button>
     );
 };
 
