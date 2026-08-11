@@ -1,8 +1,7 @@
 import { Manrope } from "next/font/google";
 import "./globals.css";
 
-import Navbar from "@/components/shared/Navbar";
-import Footer from "@/components/shared/Footer";
+import AppShell from "@/components/shared/AppShell";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -23,15 +22,7 @@ export default function RootLayout({ children }) {
       className={`${manrope.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-slate-50 font-sans text-slate-900">
-        <div className="flex min-h-screen flex-col">
-          <Navbar />
-
-          <main className="flex-1">
-            {children}
-          </main>
-
-          <Footer />
-        </div>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
