@@ -13,6 +13,7 @@ import {
     HiOutlinePlusCircle,
     HiOutlineUserGroup,
     HiOutlineUsers,
+    HiOutlineXMark,
 } from "react-icons/hi2";
 
 const navigation = {
@@ -52,7 +53,7 @@ const navigation = {
         },
         {
             label: "Add New Campaign",
-            href: "/dashboard/add-campaign",
+            href: "/dashboard/add-new-campaign",
             icon: HiOutlinePlusCircle,
         },
         {
@@ -101,7 +102,7 @@ const navigation = {
     ],
 };
 
-const DashboardSidebar = ({ onNavigate }) => {
+const DashboardSidebar = ({ onNavigate, onClose }) => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
@@ -129,27 +130,50 @@ const DashboardSidebar = ({ onNavigate }) => {
     const role = user?.role?.toLowerCase();
     const menuItems = navigation[role] || [];
 
+    const handleNavigation = () => {
+        if (onNavigate) {
+            onNavigate();
+        }
+    };
+
     return (
         <div className="flex h-full flex-col">
-            <div className="border-b border-slate-200 px-6 py-6 dark:border-slate-800">
-                <Link
-                    href="/"
-                    className="flex items-center gap-3"
-                >
-                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-sm font-black text-white shadow-lg shadow-indigo-600/20">
-                        C
-                    </span>
-
-                    <div>
-                        <span className="block text-lg font-black tracking-tight text-slate-900 dark:text-white">
-                            Crowd<span className="text-indigo-600 dark:text-indigo-400">Funding</span>
+            <div className="border-b border-slate-200 px-6 py-5 dark:border-slate-800">
+                <div className="flex items-center justify-between gap-3">
+                    <Link
+                        href="/"
+                        onClick={handleNavigation}
+                        className="flex items-center gap-3"
+                    >
+                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-sm font-black text-white shadow-lg shadow-indigo-600/20">
+                            C
                         </span>
 
-                        <span className="block text-xs font-medium text-slate-500 dark:text-slate-400">
-                            Dashboard
-                        </span>
-                    </div>
-                </Link>
+                        <div>
+                            <span className="block text-lg font-black tracking-tight text-slate-900 dark:text-white">
+                                Crowd
+                                <span className="text-indigo-600 dark:text-indigo-400">
+                                    Funding
+                                </span>
+                            </span>
+
+                            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400">
+                                Dashboard
+                            </span>
+                        </div>
+                    </Link>
+
+                    {onClose && (
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            aria-label="Close sidebar"
+                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-red-500/40 dark:hover:bg-red-950/30 dark:hover:text-red-400 lg:hidden"
+                        >
+                            <HiOutlineXMark className="h-6 w-6" />
+                        </button>
+                    )}
+                </div>
             </div>
 
             <div className="px-4 py-5">
@@ -206,7 +230,7 @@ const DashboardSidebar = ({ onNavigate }) => {
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                onClick={onNavigate}
+                                onClick={handleNavigation}
                                 className="group flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-600 transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600 dark:text-slate-300 dark:hover:bg-indigo-950/40 dark:hover:text-indigo-400"
                             >
                                 <Icon className="h-5 w-5 shrink-0 transition-transform duration-200 group-hover:scale-105" />

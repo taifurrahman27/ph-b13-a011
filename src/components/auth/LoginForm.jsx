@@ -63,8 +63,10 @@ const LoginForm = () => {
                 throw new Error(data.message || "Login failed.");
             }
 
-            localStorage.setItem("accessToken", data.token);
+            localStorage.setItem("accessToken", data.accessToken);
             localStorage.setItem("user", JSON.stringify(data.user));
+
+            window.dispatchEvent(new Event("auth-change"));
 
             router.push("/dashboard");
         } catch (error) {
@@ -78,6 +80,7 @@ const LoginForm = () => {
         "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:bg-slate-50 focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-indigo-400 dark:focus:bg-slate-800 dark:focus:ring-indigo-500/10";
 
     return (
+
         <main className="min-h-[calc(100vh-80px)] bg-white px-4 py-10 dark:bg-slate-950 sm:px-6 lg:px-8">
             <div className="mx-auto grid max-w-6xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-indigo-100/30 dark:border-slate-800 dark:bg-slate-900 dark:shadow-indigo-950/20 lg:grid-cols-2">
                 <div className="hidden bg-slate-950 p-10 text-white lg:flex lg:flex-col lg:justify-between">
