@@ -2,6 +2,7 @@ import { Manrope } from "next/font/google";
 import "./globals.css";
 
 import AppShell from "@/components/shared/AppShell";
+import { Toaster } from "react-hot-toast";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -23,6 +24,8 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full bg-slate-50 font-sans text-slate-900">
         <AppShell>{children}</AppShell>
+
+        <Toaster />
       </body>
     </html>
   );

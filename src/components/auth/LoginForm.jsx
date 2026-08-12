@@ -63,7 +63,7 @@ const LoginForm = () => {
                 throw new Error(data.message || "Login failed.");
             }
 
-            localStorage.setItem("accessToken", data.accessToken);
+            localStorage.setItem("accessToken", data.token);
             localStorage.setItem("user", JSON.stringify(data.user));
 
             window.dispatchEvent(new Event("auth-change"));
