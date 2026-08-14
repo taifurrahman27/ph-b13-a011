@@ -11,7 +11,7 @@ import {
     HiOutlineHome,
     HiOutlineMegaphone,
     HiOutlinePlusCircle,
-    HiOutlineUserGroup,
+    HiOutlineSparkles,
     HiOutlineUsers,
     HiOutlineXMark,
 } from "react-icons/hi2";
@@ -145,8 +145,8 @@ const DashboardSidebar = ({ onNavigate, onClose }) => {
                         onClick={handleNavigation}
                         className="flex items-center gap-3"
                     >
-                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-sm font-black text-white shadow-lg shadow-indigo-600/20">
-                            C
+                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm shadow-indigo-200/50 transition-all duration-300 group-hover:scale-105 group-hover:bg-indigo-500 dark:shadow-indigo-950/40">
+                            <HiOutlineSparkles className="h-5 w-5" />
                         </span>
 
                         <div>
@@ -178,7 +178,11 @@ const DashboardSidebar = ({ onNavigate, onClose }) => {
 
             <div className="px-4 py-5">
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
+
+
                     <div className="flex items-center gap-3">
+
+
                         <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-indigo-100 dark:bg-indigo-950">
                             {user?.profileImage ? (
                                 <Image

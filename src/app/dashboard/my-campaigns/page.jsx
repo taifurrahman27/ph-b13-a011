@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import MyCampaignTable from "@/components/dashboard/creator/MyCampaignTable";
 
+const API_URL = "http://localhost:5000";
+
 const MyCampaignPage = () => {
     const [campaigns, setCampaigns] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -20,25 +22,25 @@ const MyCampaignPage = () => {
                     throw new Error("You must be logged in.");
                 }
 
-                let user;
-
-                try {
-                    user = JSON.parse(storedUser);
-                } catch {
-                    throw new Error("Invalid user information.");
-                }
-
+                const user = JSON.parse(storedUser);
                 const creatorId = user?.id;
 
                 if (!creatorId) {
                     throw new Error("Creator ID could not be found.");
                 }
 
+                const token = localStorage.getItem("accessToken");
+
+                if (!token) {
+                    throw new Error("Authentication token not found.");
+                }
+
                 const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/campaigns/my-campaigns`,
+                    `${API_URL}/api/campaigns/my-campaigns`,
                     {
                         method: "GET",
                         headers: {
+                            Authorization: `Bearer ${token}`,
                             "Content-Type": "application/json",
                             "x-user-id": creatorId,
                         },
@@ -56,9 +58,12 @@ const MyCampaignPage = () => {
 
                 setCampaigns(data.campaigns || []);
             } catch (error) {
+                console.error("My campaigns error:", error);
+
                 setError(
                     error.message || "Failed to load your campaigns."
                 );
+
                 setCampaigns([]);
             } finally {
                 setLoading(false);
