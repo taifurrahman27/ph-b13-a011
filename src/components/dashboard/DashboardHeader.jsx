@@ -20,17 +20,43 @@ const DashboardHeader = ({ onMenuClick, sidebarOpen }) => {
     const [showMenu, setShowMenu] = useState(false);
 
     useEffect(() => {
-        const loadUser = () => {
-            const storedUser = localStorage.getItem("user");
+        const loadUser = async () => {
+            const token = localStorage.getItem("accessToken");
 
-            if (!storedUser) {
+            if (!token) {
                 setUser(null);
                 return;
             }
 
             try {
-                setUser(JSON.parse(storedUser));
-            } catch {
+                const response = await fetch(
+                    "http://localhost:5000/api/auth/me",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    setUser(null);
+                    return;
+                }
+
+                setUser(data.user);
+
+                localStorage.setItem(
+                    "user",
+                    JSON.stringify(data.user)
+                );
+            } catch (error) {
+                console.error(
+                    "Failed to load current user:",
+                    error
+                );
+
                 setUser(null);
             }
         };
@@ -71,15 +97,15 @@ const DashboardHeader = ({ onMenuClick, sidebarOpen }) => {
                         <span className="relative flex h-6 w-6 items-center justify-center">
                             <HiOutlineBars3
                                 className={`absolute h-6 w-6 transition-all duration-200 ${sidebarOpen
-                                        ? "rotate-90 scale-0 opacity-0"
-                                        : "rotate-0 scale-100 opacity-100"
+                                    ? "rotate-90 scale-0 opacity-0"
+                                    : "rotate-0 scale-100 opacity-100"
                                     }`}
                             />
 
                             <HiOutlineXMark
                                 className={`absolute h-6 w-6 transition-all duration-200 ${sidebarOpen
-                                        ? "rotate-0 scale-100 opacity-100"
-                                        : "-rotate-90 scale-0 opacity-0"
+                                    ? "rotate-0 scale-100 opacity-100"
+                                    : "-rotate-90 scale-0 opacity-0"
                                     }`}
                             />
                         </span>
