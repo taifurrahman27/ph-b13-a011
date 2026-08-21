@@ -281,8 +281,8 @@ const RegisterForm = () => {
                                                 }))
                                             }
                                             className={`rounded-xl border p-4 text-left transition-all ${formData.role === "supporter"
-                                                    ? "border-indigo-500 bg-indigo-50 ring-2 ring-indigo-500/10 dark:border-indigo-400 dark:bg-indigo-950/30"
-                                                    : "border-slate-200 bg-slate-50 hover:border-indigo-200 dark:border-slate-700 dark:bg-slate-800"
+                                                ? "border-indigo-500 bg-indigo-50 ring-2 ring-indigo-500/10 dark:border-indigo-400 dark:bg-indigo-950/30"
+                                                : "border-slate-200 bg-slate-50 hover:border-indigo-200 dark:border-slate-700 dark:bg-slate-800"
                                                 }`}
                                         >
                                             <HiOutlineUserGroup className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
@@ -305,8 +305,8 @@ const RegisterForm = () => {
                                                 }))
                                             }
                                             className={`rounded-xl border p-4 text-left transition-all ${formData.role === "creator"
-                                                    ? "border-indigo-500 bg-indigo-50 ring-2 ring-indigo-500/10 dark:border-indigo-400 dark:bg-indigo-950/30"
-                                                    : "border-slate-200 bg-slate-50 hover:border-indigo-200 dark:border-slate-700 dark:bg-slate-800"
+                                                ? "border-indigo-500 bg-indigo-50 ring-2 ring-indigo-500/10 dark:border-indigo-400 dark:bg-indigo-950/30"
+                                                : "border-slate-200 bg-slate-50 hover:border-indigo-200 dark:border-slate-700 dark:bg-slate-800"
                                                 }`}
                                         >
                                             <HiOutlineLightBulb className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
@@ -350,7 +350,7 @@ const RegisterForm = () => {
                             <div className="flex w-full justify-center overflow-hidden">
                                 <div
                                     ref={buttonContainerRef}
-                                    className="min-h-[44px]"
+                                    className="min-h-11"
                                 />
                             </div>
 

@@ -297,7 +297,7 @@ const LoginForm = () => {
                             <div className="flex w-full justify-center overflow-hidden">
                                 <div
                                     ref={buttonContainerRef}
-                                    className="min-h-[44px]"
+                                    className="min-h-11"
                                 />
                             </div>
 

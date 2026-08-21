@@ -2,30 +2,89 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
+    HiOutlineArrowPath,
     HiOutlineMagnifyingGlass,
-    HiOutlineUserGroup,
     HiOutlineShieldCheck,
     HiOutlineUserCircle,
-    HiOutlineCreditCard,
-    HiOutlineArrowPath,
+    HiOutlineUserGroup,
 } from "react-icons/hi2";
 import { toast } from "react-hot-toast";
+import UsersTable from "@/components/dashboard/admin/UsersTable";
 
 const UsersManagePage = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [search, setSearch] = useState("");
     const [roleFilter, setRoleFilter] = useState("all");
 
-    const fetchUsers = async () => {
-        setLoading(true);
+    useEffect(() => {
+        let cancelled = false;
+
+        const loadUsers = async () => {
+            try {
+                const token = localStorage.getItem("accessToken");
+
+                if (!token) {
+                    throw new Error("Authentication token not found.");
+                }
+
+                const response = await fetch(
+                    `${process.env.NEXT_PUBLIC_SERVER_URL}/api/admin/users`,
+                    {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.message || "Failed to load users."
+                    );
+                }
+
+                if (!cancelled) {
+                    setUsers(Array.isArray(data.users) ? data.users : []);
+                }
+            } catch (error) {
+                if (!cancelled) {
+                    console.error("Fetch users error:", error);
+                    toast.error(
+                        error.message || "Failed to load users."
+                    );
+                }
+            } finally {
+                if (!cancelled) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        loadUsers();
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const refreshUsers = async () => {
+        setRefreshing(true);
 
         try {
             const token = localStorage.getItem("accessToken");
 
+            if (!token) {
+                throw new Error("Authentication token not found.");
+            }
+
             const response = await fetch(
                 `${process.env.NEXT_PUBLIC_SERVER_URL}/api/admin/users`,
                 {
+                    method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -35,25 +94,28 @@ const UsersManagePage = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || "Failed to load users.");
+                throw new Error(
+                    data.message || "Failed to refresh users."
+                );
             }
 
             setUsers(Array.isArray(data.users) ? data.users : []);
+
+            toast.success("Users refreshed successfully.");
         } catch (error) {
-            toast.error(error.message || "Failed to load users.");
+            console.error("Refresh users error:", error);
+            toast.error(
+                error.message || "Failed to refresh users."
+            );
         } finally {
-            setLoading(false);
+            setRefreshing(false);
         }
     };
 
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
     const filteredUsers = useMemo(() => {
-        return users.filter((user) => {
-            const searchValue = search.trim().toLowerCase();
+        const searchValue = search.trim().toLowerCase();
 
+        return users.filter((user) => {
             const matchesSearch =
                 !searchValue ||
                 user.name?.toLowerCase().includes(searchValue) ||
@@ -66,17 +128,17 @@ const UsersManagePage = () => {
         });
     }, [users, search, roleFilter]);
 
-    const getRoleClass = (role) => {
-        if (role === "admin") {
-            return "bg-purple-100 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400";
-        }
+    const supporterCount = users.filter(
+        (user) => user.role === "supporter"
+    ).length;
 
-        if (role === "creator") {
-            return "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400";
-        }
+    const creatorCount = users.filter(
+        (user) => user.role === "creator"
+    ).length;
 
-        return "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400";
-    };
+    const adminCount = users.filter(
+        (user) => user.role === "admin"
+    ).length;
 
     return (
         <div className="space-y-6">
@@ -121,11 +183,7 @@ const UsersManagePage = () => {
                             </p>
 
                             <p className="mt-2 text-2xl font-black text-slate-950 dark:text-white">
-                                {
-                                    users.filter(
-                                        (user) => user.role === "supporter"
-                                    ).length
-                                }
+                                {supporterCount}
                             </p>
                         </div>
 
@@ -143,11 +201,7 @@ const UsersManagePage = () => {
                             </p>
 
                             <p className="mt-2 text-2xl font-black text-slate-950 dark:text-white">
-                                {
-                                    users.filter(
-                                        (user) => user.role === "creator"
-                                    ).length
-                                }
+                                {creatorCount}
                             </p>
                         </div>
 
@@ -165,11 +219,7 @@ const UsersManagePage = () => {
                             </p>
 
                             <p className="mt-2 text-2xl font-black text-slate-950 dark:text-white">
-                                {
-                                    users.filter(
-                                        (user) => user.role === "admin"
-                                    ).length
-                                }
+                                {adminCount}
                             </p>
                         </div>
 
@@ -180,7 +230,7 @@ const UsersManagePage = () => {
                 </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
                 <div className="flex flex-col gap-4 border-b border-slate-200 p-5 dark:border-slate-800 lg:flex-row lg:items-center lg:justify-between">
                     <div className="relative w-full lg:max-w-md">
                         <HiOutlineMagnifyingGlass className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
@@ -188,19 +238,21 @@ const UsersManagePage = () => {
                         <input
                             type="text"
                             value={search}
-                            onChange={(event) => setSearch(event.target.value)}
+                            onChange={(event) =>
+                                setSearch(event.target.value)
+                            }
                             placeholder="Search by name or email..."
                             className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-indigo-400"
                         />
                     </div>
 
-                    <div className="flex flex-col gap-3 sm:flex-row">
+                    <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto">
                         <select
                             value={roleFilter}
                             onChange={(event) =>
                                 setRoleFilter(event.target.value)
                             }
-                            className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 sm:w-auto"
                         >
                             <option value="all">All Roles</option>
                             <option value="supporter">Supporters</option>
@@ -210,15 +262,16 @@ const UsersManagePage = () => {
 
                         <button
                             type="button"
-                            onClick={fetchUsers}
-                            disabled={loading}
+                            onClick={refreshUsers}
+                            disabled={loading || refreshing}
                             className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                         >
                             <HiOutlineArrowPath
-                                className={`h-5 w-5 ${loading ? "animate-spin" : ""
+                                className={`h-5 w-5 ${refreshing ? "animate-spin" : ""
                                     }`}
                             />
-                            Refresh
+
+                            {refreshing ? "Refreshing..." : "Refresh"}
                         </button>
                     </div>
                 </div>
@@ -240,104 +293,7 @@ const UsersManagePage = () => {
                         </p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full min-w-[800px]">
-                            <thead>
-                                <tr className="border-b border-slate-200 bg-slate-50 text-left dark:border-slate-800 dark:bg-slate-800/50">
-                                    <th className="px-5 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                        User
-                                    </th>
-
-                                    <th className="px-5 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                        Role
-                                    </th>
-
-                                    <th className="px-5 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                        Credits
-                                    </th>
-
-                                    <th className="px-5 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                        Status
-                                    </th>
-
-                                    <th className="px-5 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                        Actions
-                                    </th>
-                                </tr>
-                            </thead>
-
-                            <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                                {filteredUsers.map((user) => (
-                                    <tr
-                                        key={user._id || user.id}
-                                        className="transition hover:bg-slate-50 dark:hover:bg-slate-800/40"
-                                    >
-                                        <td className="px-5 py-4">
-                                            <div className="flex items-center gap-3">
-                                                {user.profileImage ? (
-                                                    <img
-                                                        src={user.profileImage}
-                                                        alt={user.name || "User"}
-                                                        className="h-11 w-11 rounded-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400">
-                                                        <HiOutlineUserCircle className="h-7 w-7" />
-                                                    </div>
-                                                )}
-
-                                                <div>
-                                                    <p className="font-bold text-slate-900 dark:text-white">
-                                                        {user.name || "Unknown User"}
-                                                    </p>
-
-                                                    <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
-                                                        {user.email}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </td>
-
-                                        <td className="px-5 py-4">
-                                            <span
-                                                className={`inline-flex rounded-full px-3 py-1 text-xs font-bold capitalize ${getRoleClass(
-                                                    user.role
-                                                )}`}
-                                            >
-                                                {user.role}
-                                            </span>
-                                        </td>
-
-                                        <td className="px-5 py-4">
-                                            <div className="flex items-center gap-2">
-                                                <HiOutlineCreditCard className="h-5 w-5 text-indigo-500" />
-
-                                                <span className="font-bold text-slate-900 dark:text-white">
-                                                    {user.credits ?? 0}
-                                                </span>
-                                            </div>
-                                        </td>
-
-                                        <td className="px-5 py-4">
-                                            <span className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
-                                                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                                                Active
-                                            </span>
-                                        </td>
-
-                                        <td className="px-5 py-4 text-right">
-                                            <button
-                                                type="button"
-                                                className="rounded-lg px-3 py-2 text-sm font-bold text-indigo-600 transition hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-500/10"
-                                            >
-                                                View
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <UsersTable users={filteredUsers} />
                 )}
             </div>
         </div>
