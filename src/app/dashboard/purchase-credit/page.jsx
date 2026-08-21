@@ -1,30 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HiCreditCard, HiCheckCircle, HiSparkles } from "react-icons/hi2";
 import { toast } from "react-hot-toast";
 
 const creditPackages = [
     {
         id: "starter",
-        credits: 50,
-        price: 5,
+        credits: 100,
+        price: 10,
         popular: false,
         description: "Perfect for supporting a few campaigns.",
     },
     {
         id: "supporter",
-        credits: 100,
-        price: 10,
+        credits: 300,
+        price: 25,
         popular: true,
         description: "A great choice for regular supporters.",
     },
     {
         id: "champion",
-        credits: 250,
-        price: 25,
+        credits: 800,
+        price: 60,
         popular: false,
         description: "Support more ideas and make a bigger impact.",
+    },
+    {
+        id: "premium",
+        credits: 1500,
+        price: 110,
+        popular: false,
+        description: "Make a major impact across multiple campaigns.",
     },
 ];
 
@@ -32,6 +39,27 @@ export default function PurchaseCreditPage() {
     const [selectedPackage, setSelectedPackage] = useState(
         creditPackages[1]
     );
+
+    const [userCredits, setUserCredits] = useState(() => {
+        if (typeof window === "undefined") {
+            return 0;
+        }
+
+        try {
+            const storedUser = localStorage.getItem("user");
+
+            if (!storedUser) {
+                return 0;
+            }
+
+            const parsedUser = JSON.parse(storedUser);
+
+            return Number(parsedUser?.credits || 0);
+        } catch {
+            return 0;
+        }
+    });
+
     const [loading, setLoading] = useState(false);
 
     const handlePurchase = async () => {
@@ -126,7 +154,7 @@ export default function PurchaseCreditPage() {
                                 </p>
 
                                 <h2 className="mt-1 text-3xl font-black text-slate-900 dark:text-white">
-                                    0
+                                    {userCredits.toLocaleString()}
                                 </h2>
                             </div>
                         </div>
@@ -199,8 +227,8 @@ export default function PurchaseCreditPage() {
                                             )
                                         }
                                         className={`relative rounded-2xl border p-5 text-left transition ${isSelected
-                                                ? "border-indigo-500 bg-indigo-50 shadow-md shadow-indigo-100 dark:border-indigo-500 dark:bg-indigo-950/40 dark:shadow-black/20"
-                                                : "border-slate-200 bg-white hover:border-indigo-200 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-800"
+                                            ? "border-indigo-500 bg-indigo-50 shadow-md shadow-indigo-100 dark:border-indigo-500 dark:bg-indigo-950/40 dark:shadow-black/20"
+                                            : "border-slate-200 bg-white hover:border-indigo-200 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-800"
                                             }`}
                                     >
                                         {creditPackage.popular && (

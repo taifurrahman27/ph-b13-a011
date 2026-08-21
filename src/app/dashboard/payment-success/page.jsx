@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -8,7 +9,7 @@ import {
     HiOutlineReceiptPercent,
 } from "react-icons/hi2";
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
     const searchParams = useSearchParams();
     const sessionId = searchParams.get("session_id");
 
@@ -82,5 +83,24 @@ export default function PaymentSuccessPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function PaymentSuccessPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-[calc(100vh-5rem)] bg-slate-50 px-4 py-12">
+                <div className="mx-auto flex min-h-[70vh] max-w-2xl items-center justify-center">
+                    <div className="w-full rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm sm:p-12">
+                        <div className="mx-auto h-20 w-20 animate-pulse rounded-full bg-emerald-50" />
+                        <div className="mt-6 h-6 w-40 animate-pulse rounded bg-slate-200" />
+                        <div className="mt-3 h-10 w-72 animate-pulse rounded bg-slate-200" />
+                        <div className="mt-8 h-32 animate-pulse rounded-2xl bg-slate-200" />
+                    </div>
+                </div>
+            </div>
+        }>
+            <PaymentSuccessContent />
+        </Suspense>
     );
 }

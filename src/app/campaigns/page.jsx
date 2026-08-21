@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { HiOutlineCurrencyDollar } from "react-icons/hi2";
 import CampaignCard from "@/components/campaigns/CampaignCard";
 
+const API_URL = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
+
 const AllCampaignsPage = () => {
     const [campaigns, setCampaigns] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -16,7 +18,7 @@ const AllCampaignsPage = () => {
                 setError("");
 
                 const response = await fetch(
-                    "http://localhost:5000/api/campaigns"
+                    `${API_URL}/api/campaigns`
                 );
 
                 if (!response.ok) {

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import MyCampaignTable from "@/components/dashboard/creator/MyCampaignTable";
 
-const API_URL = "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
 
 const MyCampaignPage = () => {
     const [campaigns, setCampaigns] = useState([]);

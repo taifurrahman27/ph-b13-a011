@@ -15,6 +15,8 @@ import {
 import CampaignDetailsInfo from "./CampaignDetailsInfo";
 import CampaignContributionCard from "./CampaignContributionCard";
 
+const API_URL = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
+
 const CampaignDetails = ({ campaignId }) => {
     const router = useRouter();
 
@@ -38,7 +40,7 @@ const CampaignDetails = ({ campaignId }) => {
                 }
 
                 const response = await fetch(
-                    `http://localhost:5000/api/campaigns/${campaignId}`,
+                    `${API_URL}/api/campaigns/${campaignId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,

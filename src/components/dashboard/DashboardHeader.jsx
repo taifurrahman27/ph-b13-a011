@@ -12,6 +12,9 @@ import {
     HiOutlineXMark,
 } from "react-icons/hi2";
 import ThemeToggle from "../shared/ThemeToggle";
+import UserCredits from "./supporter/UserCredits";
+
+const API_URL = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
 
 const DashboardHeader = ({ onMenuClick, sidebarOpen }) => {
     const router = useRouter();
@@ -30,7 +33,7 @@ const DashboardHeader = ({ onMenuClick, sidebarOpen }) => {
 
             try {
                 const response = await fetch(
-                    "http://localhost:5000/api/auth/me",
+                    `${API_URL}/api/auth/me`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -129,9 +132,7 @@ const DashboardHeader = ({ onMenuClick, sidebarOpen }) => {
                             Credits
                         </span>
 
-                        <span className="font-black text-indigo-600 dark:text-indigo-400">
-                            {user?.credits ?? 0}
-                        </span>
+                        <UserCredits />
                     </div>
 
                     <ThemeToggle />

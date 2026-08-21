@@ -10,6 +10,8 @@ import {
     HiOutlineXCircle,
 } from "react-icons/hi2";
 
+const API_URL = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
+
 const PaymentHistoryPage = () => {
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -26,7 +28,7 @@ const PaymentHistoryPage = () => {
                 }
 
                 const response = await fetch(
-                    "http://localhost:5000/api/payments/payment-history",
+                    `${API_URL}/api/payments/payment-history`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,

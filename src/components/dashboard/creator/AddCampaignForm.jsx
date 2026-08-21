@@ -143,7 +143,7 @@ const AddCampaignForm = () => {
             console.log("Campaign data:", campaignData);
 
             const response = await fetch(
-                "http://localhost:5000/api/campaigns",
+                `${process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000"}/api/campaigns`,
                 {
                     method: "POST",
                     headers: {

@@ -87,7 +87,7 @@ const CampaignCard = ({ campaign }) => {
                 <div className="mt-5">
                     <div className="mb-2 flex items-center justify-between text-sm">
                         <span className="font-bold text-slate-900 dark:text-white">
-                            ৳
+                            $
                             {formatAmount(
                                 campaign.total_contributed
                             )}
@@ -109,14 +109,14 @@ const CampaignCard = ({ campaign }) => {
 
                     <div className="mt-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                         <span>
-                            Raised ৳
+                            Raised $
                             {formatAmount(
                                 campaign.total_contributed
                             )}
                         </span>
 
                         <span>
-                            Goal ৳
+                            Goal $
                             {formatAmount(
                                 campaign.funding_goal
                             )}
@@ -129,7 +129,7 @@ const CampaignCard = ({ campaign }) => {
                     <HiOutlineCurrencyDollar className="text-base" />
 
                     <span>
-                        Minimum contribution: ৳
+                        Minimum contribution: $
                         {formatAmount(
                             campaign.minimum_Contribution
                         )}
