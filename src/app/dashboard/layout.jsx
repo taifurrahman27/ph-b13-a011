@@ -8,10 +8,6 @@ import DashboardFooter from "@/components/dashboard/DashboardFooter";
 const DashboardLayout = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    const openSidebar = () => {
-        setSidebarOpen(true);
-    };
-
     const closeSidebar = () => {
         setSidebarOpen(false);
     };
@@ -24,7 +20,7 @@ const DashboardLayout = ({ children }) => {
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
             <div className="flex min-h-screen">
                 <div
-                    className={`fixed inset-0 z-40 lg:hidden ${sidebarOpen
+                    className={`fixed inset-0 z-100 lg:hidden ${sidebarOpen
                             ? "pointer-events-auto"
                             : "pointer-events-none"
                         }`}
@@ -40,13 +36,14 @@ const DashboardLayout = ({ children }) => {
                     />
 
                     <aside
-                        className={`absolute left-0 top-0 h-full w-72 max-w-[85vw] border-r border-slate-200 bg-white shadow-2xl transition-transform duration-300 ease-out dark:border-slate-800 dark:bg-slate-950 ${sidebarOpen
+                        className={`absolute left-0 top-0 z-101 h-full w-72 max-w-[85vw] border-r border-slate-200 bg-white shadow-2xl transition-transform duration-300 ease-out dark:border-slate-800 dark:bg-slate-950 ${sidebarOpen
                                 ? "translate-x-0"
                                 : "-translate-x-full"
                             }`}
                     >
                         <DashboardSidebar
                             onNavigate={closeSidebar}
+                            onClose={closeSidebar}
                         />
                     </aside>
                 </div>
