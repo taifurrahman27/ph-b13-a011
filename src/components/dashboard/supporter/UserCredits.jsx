@@ -1,18 +1,43 @@
 "use client";
 
-const UserCredits = () => {
-    let credits = 0;
+import { useEffect, useState } from "react";
 
-    try {
+const UserCredits = () => {
+    const [credits, setCredits] = useState(0);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setMounted(true);
+        }, 0);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    useEffect(() => {
+        if (!mounted) {
+            return;
+        }
+
         const storedUser = localStorage.getItem("user");
 
-        if (storedUser) {
-            const parsedUser = JSON.parse(storedUser);
-            credits = Number(parsedUser?.credits || 0);
+        if (!storedUser) {
+            return;
         }
-    } catch (error) {
-        console.error("Failed to parse user data:", error);
-    }
+
+        try {
+            const user = JSON.parse(storedUser);
+            const currentCredits = Number(user?.credits) || 0;
+
+            const timer = setTimeout(() => {
+                setCredits(currentCredits);
+            }, 0);
+
+            return () => clearTimeout(timer);
+        } catch (error) {
+            console.error("Failed to read user data:", error);
+        }
+    }, [mounted]);
 
     return (
         <h2 className="mt-1 text-xl font-black text-slate-900 dark:text-white">
