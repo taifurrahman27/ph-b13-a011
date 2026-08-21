@@ -11,7 +11,7 @@ const manrope = Manrope({
 });
 
 export const metadata = {
-  title: "CrowdFund | Bring Great Ideas to Life",
+  title: "CrowdFunding | Bring Great Ideas to Life",
   description:
     "A crowdfunding platform where creators share ideas and supporters help turn them into reality.",
 };
@@ -25,7 +25,12 @@ export default function RootLayout({ children }) {
       <body className="min-h-full bg-slate-50 font-sans text-slate-900">
         <AppShell>{children}</AppShell>
 
-        <Toaster />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+          }}
+        />
       </body>
     </html>
   );

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
     HiOutlineArrowLeft,
     HiOutlineCalendarDays,
@@ -15,6 +16,8 @@ import CampaignDetailsInfo from "./CampaignDetailsInfo";
 import CampaignContributionCard from "./CampaignContributionCard";
 
 const CampaignDetails = ({ campaignId }) => {
+    const router = useRouter();
+
     const [campaign, setCampaign] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -25,9 +28,37 @@ const CampaignDetails = ({ campaignId }) => {
                 setLoading(true);
                 setError("");
 
+                const token = localStorage.getItem("accessToken");
+
+                if (!token) {
+                    router.push(
+                        `/login?redirect=/campaigns/${campaignId}`
+                    );
+                    return;
+                }
+
                 const response = await fetch(
-                    `http://localhost:5000/api/campaigns/${campaignId}`
+                    `http://localhost:5000/api/campaigns/${campaignId}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
                 );
+
+                if (response.status === 401) {
+                    localStorage.removeItem("accessToken");
+
+                    router.push(
+                        `/login?redirect=/campaigns/${campaignId}`
+                    );
+
+                    return;
+                }
+
+                if (response.status === 404) {
+                    throw new Error("Campaign not found.");
+                }
 
                 if (!response.ok) {
                     throw new Error("Failed to fetch campaign");
@@ -38,11 +69,15 @@ const CampaignDetails = ({ campaignId }) => {
                 if (data.success) {
                     setCampaign(data.campaign);
                 } else {
-                    throw new Error("Campaign not found");
+                    throw new Error(
+                        data.message || "Campaign not found."
+                    );
                 }
             } catch (error) {
                 console.error("Campaign details error:", error);
+
                 setError(
+                    error.message ||
                     "Unable to load this campaign. Please try again later."
                 );
             } finally {
@@ -53,7 +88,7 @@ const CampaignDetails = ({ campaignId }) => {
         if (campaignId) {
             fetchCampaign();
         }
-    }, [campaignId]);
+    }, [campaignId, router]);
 
     const formatAmount = (amount) => {
         return Number(amount || 0).toLocaleString();
@@ -161,7 +196,7 @@ const CampaignDetails = ({ campaignId }) => {
                                         src={campaign.campaign_image_url}
                                         alt={campaign.campaign_title}
                                         fill
-                                        className="object-cover"
+                                        className="h-full w-full object-cover"
                                     />
                                 ) : (
                                     <div className="flex h-full items-center justify-center bg-linear-to-br from-indigo-500/20 via-purple-500/10 to-slate-100 dark:from-indigo-500/20 dark:via-purple-500/10 dark:to-slate-800">
