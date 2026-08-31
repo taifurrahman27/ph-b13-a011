@@ -38,7 +38,6 @@ const CampaignCard = ({ campaign }) => {
 
     return (
         <article className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
-            {/* Campaign Image */}
             <div className="relative h-56 overflow-hidden bg-slate-100 dark:bg-slate-800">
                 {campaign.campaign_image_url ? (
                     <Image
@@ -53,18 +52,15 @@ const CampaignCard = ({ campaign }) => {
                     </div>
                 )}
 
-                {/* Category */}
                 <div className="absolute left-4 top-4 rounded-full border border-white/20 bg-slate-950/75 px-3 py-1 text-xs font-bold text-white backdrop-blur-sm">
                     {campaign.category}
                 </div>
 
-                {/* Status */}
                 <div className="absolute right-4 top-4 rounded-full bg-emerald-500/90 px-3 py-1 text-xs font-bold capitalize text-white backdrop-blur-sm">
                     {campaign.status}
                 </div>
             </div>
 
-            {/* Content */}
             <div className="p-5">
                 <h2 className="line-clamp-2 text-xl font-bold text-slate-900 transition-colors group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">
                     {campaign.campaign_title}
@@ -74,16 +70,14 @@ const CampaignCard = ({ campaign }) => {
                     {campaign.campaign_story}
                 </p>
 
-                {/* Creator */}
                 <div className="mt-4 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
                     <HiOutlineUserCircle className="text-lg" />
 
                     <span className="truncate">
-                        Creator
+                        {campaign.creator?.name || "Creator"}
                     </span>
                 </div>
 
-                {/* Funding Progress */}
                 <div className="mt-5">
                     <div className="mb-2 flex items-center justify-between text-sm">
                         <span className="font-bold text-slate-900 dark:text-white">
@@ -124,7 +118,6 @@ const CampaignCard = ({ campaign }) => {
                     </div>
                 </div>
 
-                {/* Minimum Contribution */}
                 <div className="mt-4 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                     <HiOutlineCurrencyDollar className="text-base" />
 
@@ -136,7 +129,6 @@ const CampaignCard = ({ campaign }) => {
                     </span>
                 </div>
 
-                {/* Deadline */}
                 <div className="mt-2 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                     <HiOutlineCalendarDays className="text-base" />
 
@@ -146,7 +138,6 @@ const CampaignCard = ({ campaign }) => {
                     </span>
                 </div>
 
-                {/* Details Button */}
                 <Link
                     href={`/campaigns/${campaign._id}`}
                     className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600"

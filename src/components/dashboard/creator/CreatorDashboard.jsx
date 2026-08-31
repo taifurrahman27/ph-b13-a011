@@ -7,6 +7,7 @@ import {
     HiOutlineBanknotes,
     HiOutlineCurrencyDollar,
 } from "react-icons/hi2";
+import ContributionsToReview from "./ContributionsToReview";
 
 const CreatorDashboard = ({ user }) => {
     const [summary, setSummary] = useState({
@@ -121,6 +122,10 @@ const CreatorDashboard = ({ user }) => {
                     Track your campaigns, raised credits, and
                     earnings from your dashboard.
                 </p>
+            </div>
+
+            <div className="mt-8">
+                <ContributionsToReview />
             </div>
 
             <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">

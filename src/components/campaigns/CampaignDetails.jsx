@@ -178,7 +178,6 @@ const CampaignDetails = ({ campaignId }) => {
     return (
         <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-900 transition-colors dark:bg-slate-950 dark:text-white sm:px-6 lg:px-8">
             <div className="mx-auto max-w-7xl">
-                {/* Back Button */}
                 <Link
                     href="/campaigns"
                     className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
@@ -188,9 +187,7 @@ const CampaignDetails = ({ campaignId }) => {
                 </Link>
 
                 <div className="grid gap-8 lg:grid-cols-3">
-                    {/* Main Content */}
                     <div className="lg:col-span-2">
-                        {/* Campaign Image */}
                         <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                             <div className="relative h-75 sm:h-105">
                                 {campaign.campaign_image_url ? (
@@ -216,7 +213,6 @@ const CampaignDetails = ({ campaignId }) => {
                             </div>
                         </div>
 
-                        {/* Campaign Heading */}
                         <div className="mt-8">
                             <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
                                 {campaign.campaign_title}
@@ -242,11 +238,9 @@ const CampaignDetails = ({ campaignId }) => {
                             </div>
                         </div>
 
-                        {/* Story */}
                         <CampaignDetailsInfo campaign={campaign} />
                     </div>
 
-                    {/* Contribution Card */}
                     <div>
                         <CampaignContributionCard
                             campaign={campaign}

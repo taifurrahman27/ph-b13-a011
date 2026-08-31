@@ -66,11 +66,6 @@ const navigation = {
             href: "/dashboard/withdrawals",
             icon: HiOutlineBanknotes,
         },
-        {
-            label: "Payment History",
-            href: "/dashboard/payment-history",
-            icon: HiOutlineCreditCard,
-        },
     ],
 
     admin: [

@@ -15,6 +15,7 @@ import {
 import { toast } from "react-hot-toast";
 
 function MyContributionsContent() {
+
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -60,6 +61,7 @@ function MyContributionsContent() {
                 }
 
                 setContributions(data.contributions || []);
+
             } catch (error) {
                 console.error(
                     "Fetch contributions error:",
@@ -77,6 +79,8 @@ function MyContributionsContent() {
 
         fetchContributions();
     }, [isPaymentSuccess]);
+
+    console.log(contributions);
 
     const formatAmount = (amount) => {
         return Number(amount || 0).toLocaleString("en-US", {
@@ -231,10 +235,12 @@ function MyContributionsContent() {
                 ) : (
                     <div className="mt-8 space-y-5">
                         {contributions.map((contribution) => (
-                            <div
+
+                            < div
                                 key={contribution._id}
                                 className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
                             >
+
                                 <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                                     <div className="flex items-start gap-4">
                                         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-950/50">
@@ -285,9 +291,9 @@ function MyContributionsContent() {
 
                                         <div
                                             className={`rounded-xl px-5 py-3 text-center ${contribution.status ===
-                                                    "completed"
-                                                    ? "bg-emerald-50 dark:bg-emerald-950/30"
-                                                    : "bg-amber-50 dark:bg-amber-950/30"
+                                                "completed"
+                                                ? "bg-emerald-50 dark:bg-emerald-950/30"
+                                                : "bg-amber-50 dark:bg-amber-950/30"
                                                 }`}
                                         >
                                             <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
@@ -296,9 +302,9 @@ function MyContributionsContent() {
 
                                             <p
                                                 className={`mt-1 text-sm font-black capitalize ${contribution.status ===
-                                                        "completed"
-                                                        ? "text-emerald-600 dark:text-emerald-400"
-                                                        : "text-amber-600 dark:text-amber-400"
+                                                    "completed"
+                                                    ? "text-emerald-600 dark:text-emerald-400"
+                                                    : "text-amber-600 dark:text-amber-400"
                                                     }`}
                                             >
                                                 {contribution.status ||
@@ -312,7 +318,7 @@ function MyContributionsContent() {
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 }
 
