@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 
 import {
@@ -10,12 +11,12 @@ import {
     HiHeart,
     HiOutlineCalendarDays,
     HiOutlineCurrencyDollar,
+    HiOutlineUserCircle,
 } from "react-icons/hi2";
 
 import { toast } from "react-hot-toast";
 
 function MyContributionsContent() {
-
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -39,6 +40,7 @@ function MyContributionsContent() {
 
                 if (!token) {
                     toast.error("Please login to view your contributions.");
+                    setLoading(false);
                     return;
                 }
 
@@ -60,17 +62,16 @@ function MyContributionsContent() {
                     );
                 }
 
-                setContributions(data.contributions || []);
-
-            } catch (error) {
-                console.error(
-                    "Fetch contributions error:",
-                    error
+                setContributions(
+                    Array.isArray(data.contributions)
+                        ? data.contributions
+                        : []
                 );
+            } catch (error) {
+                console.error("Fetch contributions error:", error);
 
                 toast.error(
-                    error.message ||
-                    "Failed to load contributions."
+                    error.message || "Failed to load contributions."
                 );
             } finally {
                 setLoading(false);
@@ -80,8 +81,6 @@ function MyContributionsContent() {
         fetchContributions();
     }, [isPaymentSuccess]);
 
-    console.log(contributions);
-
     const formatAmount = (amount) => {
         return Number(amount || 0).toLocaleString("en-US", {
             minimumFractionDigits: 2,
@@ -89,16 +88,64 @@ function MyContributionsContent() {
         });
     };
 
+    const formatNumber = (value) => {
+        return Number(value || 0).toLocaleString("en-US");
+    };
+
     const formatDate = (date) => {
         if (!date) {
             return "N/A";
         }
 
-        return new Date(date).toLocaleDateString("en-US", {
+        const parsedDate = new Date(date);
+
+        if (Number.isNaN(parsedDate.getTime())) {
+            return "N/A";
+        }
+
+        return parsedDate.toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
             day: "numeric",
         });
+    };
+
+    const getStatusStyles = (status) => {
+        const normalizedStatus = String(status || "").toLowerCase();
+
+        if (normalizedStatus === "approved") {
+            return {
+                wrapper:
+                    "bg-emerald-50 dark:bg-emerald-950/30",
+                text:
+                    "text-emerald-600 dark:text-emerald-400",
+                icon:
+                    "text-emerald-600 dark:text-emerald-400",
+                label: "Approved",
+            };
+        }
+
+        if (normalizedStatus === "rejected") {
+            return {
+                wrapper:
+                    "bg-red-50 dark:bg-red-950/30",
+                text:
+                    "text-red-600 dark:text-red-400",
+                icon:
+                    "text-red-600 dark:text-red-400",
+                label: "Rejected",
+            };
+        }
+
+        return {
+            wrapper:
+                "bg-amber-50 dark:bg-amber-950/30",
+            text:
+                "text-amber-600 dark:text-amber-400",
+            icon:
+                "text-amber-600 dark:text-amber-400",
+            label: "Pending",
+        };
     };
 
     if (isPaymentSuccess) {
@@ -188,7 +235,7 @@ function MyContributionsContent() {
                         {[1, 2, 3].map((item) => (
                             <div
                                 key={item}
-                                className="h-36 animate-pulse rounded-3xl bg-slate-200 dark:bg-slate-800"
+                                className="h-40 animate-pulse rounded-3xl bg-slate-200 dark:bg-slate-800"
                             />
                         ))}
                     </div>
@@ -201,12 +248,16 @@ function MyContributionsContent() {
         <div className="min-h-[calc(100vh-5rem)] bg-slate-50 px-4 py-10 transition-colors dark:bg-slate-950">
             <div className="mx-auto max-w-6xl">
                 <div>
-                    <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+                    <span className="text-sm font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                        CrowdFunding • Supporter
+                    </span>
+
+                    <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
                         My Contributions
                     </h1>
 
                     <p className="mt-2 text-slate-500 dark:text-slate-400">
-                        View and manage your campaign contributions.
+                        View all your contributions and their current status.
                     </p>
                 </div>
 
@@ -221,8 +272,8 @@ function MyContributionsContent() {
                         </h2>
 
                         <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400">
-                            Your successful campaign contributions will appear
-                            here.
+                            Your contributions will appear here after you
+                            support a campaign.
                         </p>
 
                         <Link
@@ -233,111 +284,171 @@ function MyContributionsContent() {
                         </Link>
                     </div>
                 ) : (
-                    <div className="mt-8 space-y-5">
-                        {contributions.map((contribution) => (
+                    <div className="mt-8 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                        <div className="overflow-x-auto">
+                            <table className="w-full min-w-225 text-left">
+                                <thead className="border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950/50">
+                                    <tr>
+                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                            Campaign
+                                        </th>
 
-                            < div
-                                key={contribution._id}
-                                className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
-                            >
+                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                            Creator
+                                        </th>
 
-                                <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-                                    <div className="flex items-start gap-4">
-                                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-950/50">
-                                            <HiHeart className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-                                        </div>
+                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                            Credits
+                                        </th>
 
-                                        <div>
-                                            <h2 className="text-lg font-black text-slate-900 dark:text-white">
-                                                {contribution.campaignTitle ||
-                                                    "Campaign"}
-                                            </h2>
+                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                            Amount
+                                        </th>
 
-                                            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
-                                                <span className="flex items-center gap-1.5">
-                                                    <HiOutlineCalendarDays className="h-4 w-4" />
-                                                    {formatDate(
-                                                        contribution.contribution_date
-                                                    )}
-                                                </span>
+                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                            Date
+                                        </th>
 
-                                                <span className="flex items-center gap-1.5">
-                                                    <HiOutlineCurrencyDollar className="h-4 w-4" />
-                                                    $
-                                                    {formatAmount(
-                                                        contribution.contribution_amount
-                                                    )}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                            Status
+                                        </th>
+                                    </tr>
+                                </thead>
 
-                                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                                        <div className="rounded-xl bg-indigo-50 px-5 py-3 text-center dark:bg-indigo-950/40">
-                                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                                                Contribution
-                                            </p>
+                                <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+                                    {contributions.map((contribution) => {
+                                        const status = getStatusStyles(
+                                            contribution.status
+                                        );
 
-                                            <p className="mt-1 text-lg font-black text-indigo-600 dark:text-indigo-400">
-                                                {Number(
-                                                    contribution.contribution_credit ||
-                                                    0
-                                                ).toLocaleString(
-                                                    "en-US"
-                                                )}{" "}
-                                                Credits
-                                            </p>
-                                        </div>
-
-                                        <div
-                                            className={`rounded-xl px-5 py-3 text-center ${contribution.status ===
-                                                "completed"
-                                                ? "bg-emerald-50 dark:bg-emerald-950/30"
-                                                : "bg-amber-50 dark:bg-amber-950/30"
-                                                }`}
-                                        >
-                                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                                                Status
-                                            </p>
-
-                                            <p
-                                                className={`mt-1 text-sm font-black capitalize ${contribution.status ===
-                                                    "completed"
-                                                    ? "text-emerald-600 dark:text-emerald-400"
-                                                    : "text-amber-600 dark:text-amber-400"
-                                                    }`}
+                                        return (
+                                            <tr
+                                                key={contribution._id}
+                                                className="transition hover:bg-slate-50 dark:hover:bg-slate-800/40"
                                             >
-                                                {contribution.status ||
-                                                    "completed"}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                                                <td className="px-6 py-5">
+                                                    <div className="flex items-center gap-3">
+                                                        {contribution.campaignImage ? (
+                                                            <Image
+                                                                src={
+                                                                    contribution.campaignImage
+                                                                }
+                                                                alt={
+                                                                    contribution.campaignTitle ||
+                                                                    "Campaign"
+                                                                }
+                                                                width={56}
+                                                                height={56}
+                                                                className="h-14 w-14 rounded-xl object-cover"
+                                                                unoptimized
+                                                            />
+                                                        ) : (
+                                                            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-950/50">
+                                                                <HiHeart className="h-6 w-6 text-indigo-500 dark:text-indigo-400" />
+                                                            </div>
+                                                        )}
+
+                                                        <div className="min-w-0">
+                                                            <p className="max-w-xs truncate font-bold text-slate-900 dark:text-white">
+                                                                {contribution.campaignTitle ||
+                                                                    "Campaign Unavailable"}
+                                                            </p>
+
+                                                            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                                                Campaign
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+                                                <td className="px-6 py-5">
+                                                    <div className="flex items-center gap-2">
+                                                        <HiOutlineUserCircle className="h-5 w-5 text-slate-400" />
+
+                                                        <div>
+                                                            <p className="font-semibold text-slate-900 dark:text-white">
+                                                                {contribution.creator_name ||
+                                                                    contribution.creatorName ||
+                                                                    "Unknown Creator"}
+                                                            </p>
+
+                                                            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                                                {contribution.creator_email ||
+                                                                    contribution.creatorEmail ||
+                                                                    ""}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+                                                <td className="px-6 py-5">
+                                                    <span className="inline-flex rounded-xl bg-indigo-50 px-3 py-2 text-sm font-black text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400">
+                                                        {formatNumber(
+                                                            contribution.contribution_credit
+                                                        )}{" "}
+                                                        Credits
+                                                    </span>
+                                                </td>
+
+                                                <td className="px-6 py-5">
+                                                    <div className="flex items-center gap-1.5 font-black text-slate-900 dark:text-white">
+                                                        <HiOutlineCurrencyDollar className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
+                                                        {formatAmount(
+                                                            contribution.contribution_amount
+                                                        )}
+                                                    </div>
+                                                </td>
+
+                                                <td className="px-6 py-5">
+                                                    <div className="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-400">
+                                                        <HiOutlineCalendarDays className="h-4 w-4" />
+                                                        {formatDate(
+                                                            contribution.contribution_date ||
+                                                            contribution.createdAt
+                                                        )}
+                                                    </div>
+                                                </td>
+
+                                                <td className="px-6 py-5">
+                                                    <span
+                                                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${status.wrapper} ${status.text}`}
+                                                    >
+                                                        {status.label ===
+                                                            "Approved" ? (
+                                                            <HiCheckCircle className={`h-4 w-4 ${status.icon}`} />
+                                                        ) : null}
+
+                                                        {status.label}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
             </div>
-        </div >
+        </div>
     );
+
 }
 
 export default function MyContributionsPage() {
     return (
         <Suspense
-            fallback={
-                <div className="min-h-[calc(100vh-5rem)] bg-slate-50 px-4 py-10 dark:bg-slate-950">
-                    <div className="mx-auto max-w-6xl">
-                        <div className="h-10 w-56 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-800" />
+            fallback={<div className="min-h-[calc(100vh-5rem)] bg-slate-50 px-4 py-10 dark:bg-slate-950"> <div className="mx-auto max-w-6xl"> <div className="h-10 w-56 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-800" />
 
-                        <div className="mt-3 h-5 w-80 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
+                <div className="mt-3 h-5 w-80 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
 
-                        <div className="mt-8 h-64 animate-pulse rounded-3xl bg-slate-200 dark:bg-slate-800" />
-                    </div>
-                </div>
+                <div className="mt-8 h-64 animate-pulse rounded-3xl bg-slate-200 dark:bg-slate-800" />
+            </div>
+            </div>
             }
         >
             <MyContributionsContent />
         </Suspense>
     );
+
 }
