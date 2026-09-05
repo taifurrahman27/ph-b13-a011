@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import {
     HiOutlineArrowRight,
     HiOutlineCalendarDays,
@@ -164,6 +165,10 @@ const AddCampaignForm = () => {
             }
 
             setSuccess(
+                "Campaign submitted successfully. Waiting for Admin approval."
+            );
+
+            toast.success(
                 "Campaign submitted successfully. Waiting for Admin approval."
             );
 
