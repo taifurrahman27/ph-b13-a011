@@ -76,7 +76,7 @@ const Footer = () => {
                         <span className="text-2xl font-extrabold tracking-tight">
                             Crowd
                             <span className="text-indigo-600 dark:text-indigo-400">
-                                Fund
+                                Funding
                             </span>
                         </span>
                     </Link>
